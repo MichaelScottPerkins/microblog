@@ -1,0 +1,126 @@
+ELASTICSEARCH EXAMPLES
+
+Start Elasticsearch
+
+Command Prompt:  
+MichaelPe> cd \desktop\elasticsearch\elasticsearch-7.5.2
+MichaelPe\desktop\elasticsearch\elasticsearch-7.5.2>bin\elasticsearch.bat
+
+In PyCharm > flask shell
+>>>>
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Creates an index object with some text:
+
+>>> es.index(index='my_index', id=1, body={'text': 'this is a test'})
+
+RESULTS:
+
+{
+
+	'_index': 'my_index',
+	'_type': '_doc',
+	'_id': '1',
+	'_version': 2,
+	'result': 'updated',
+
+'_shards':{
+		'total': 2,
+		'successful': 1,
+		'failed': 0
+	},
+
+	'_seq_no': 2,
+	'_primary_term': 4
+
+}
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Adds a second document to the same index with some text:
+
+>>> es.index(index='my_index', id=2, body={'text': 'a second test'})
+
+RESULTS:
+{
+	'_index': 'my_index',
+	'_type': '_doc',	
+	'_id': '2',
+	'_version': 2,
+	'result': 'updated',
+	
+'_shards': {
+		'total': 2,
+		'successful': 1,
+		'failed': 0
+	},
+	'_seq_no': 3,
+	'_primary_term': 4
+}
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Runs a search through the index for the words, 'this test'
+
+RESULTS:
+>>> es.search(index='my_index', body={'query': {'match': {'text': 'this test'}}})
+{
+	'took': 874,
+	'timed_out': False,
+	'_shards': {'total': 1, 'successful': 1, 'skipped': 0, 'failed': 0},
+	'hits': {
+		total': {'value': 2,'relation': 'eq'}, 
+		'max_score': 0.82712996,
+		'hits': [
+			{
+				'_index': 'my_index',
+				'_type': '_doc',
+				'_id': '1',
+				'_score': 0.82712996,
+				'_source': {'text': 'this is a test'}
+			},
+			{
+				'_index': 'my_index',
+				'_type': '_doc',
+				'_id': '2',
+				'_score': 0.19363809,
+				'_source': {'text': 'a second test'}
+			}
+		]
+	}
+}
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Runs a second search for the word 'second'
+
+>>> es.search(index='my_index', body={'query': {'match': {'text': 'second'}}})
+
+RESULTS:
+{
+	'took': 6,
+	'timed_out': False,
+	'_shards': {'total': 1, 'successful': 1, 'skipped': 0, 'failed': 0}, 
+	'hits': {
+		'total': {'value': 1, 'relation': 'eq'},
+		'max_score': 0.7361701,
+		'hits': [
+			{
+				'_index': 'my_index',
+				 '_type': '_doc',
+				'_id': '2',
+				'_score': 0.7361701,
+				'_source': {'text': 'a second test'}
+			}
+		]
+	}
+}
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Cleans up by deleting the index
+
+>>> es.indices.delete('my_index')
+
+RESULTS
+
+{'acknowledged': True}
+
+
+
+
+
+
+
